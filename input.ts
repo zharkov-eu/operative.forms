@@ -16,26 +16,28 @@
 
 "use strict";
 
-import {Input} from "./input";
-import {IBrowserFormOptions} from "./interfaces";
+import {IBrowserInputOptions} from "./interfaces";
 import * as types from "./types";
 
-interface IForm {
-  OnSubmit?: Array<(input: HTMLInputElement, next: string) => any>;
-  Options?: IBrowserFormOptions;
-  Style?: types.TInputStyle;
-  StyleAlign?: types.TInputStyleAlign;
+interface IInput {
+  Name: string;
+  Type: types.TInputType;
+  Icon?: string;
+  View?: types.TInputView;
+  Transform?: (value: string) => any;
+  Mask: (value: string) => any;
+  Required?: boolean;
+  Options?: IBrowserInputOptions;
 }
 
-class Form {
-  private OnSubmit: Array<(input: HTMLInputElement, next: string) => any>;
-  private Options: IBrowserFormOptions;
-  private Inputs: Input[];
-  private Style: types.TInputStyle;
-  private StyleAlign: types.TInputStyleAlign;
-
-  constructor(construct: IForm) {
-    this.Style = construct.Style || "outside";
-    this.StyleAlign = construct.StyleAlign || "left";
-  }
+export class Input {
+  public Value: any;
+  private Name: string;
+  private Type: types.TInputType;
+  private Icon?: string;
+  private View?: types.TInputView;
+  private Transform?: (value: string) => any;
+  private Handler?: Array<(input: HTMLInputElement, next: string) => any>;
+  private Required?: boolean;
+  private Options?: IBrowserInputOptions;
 }

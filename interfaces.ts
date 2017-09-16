@@ -18,7 +18,7 @@
 
 import * as types from "./types";
 
-interface IBrowserForm {
+export interface IBrowserFormOptions {
   "accept-charset": string; // UTF-8
   action: string;
   autocomplete: types.TOnOff; // HTML5
@@ -26,7 +26,7 @@ interface IBrowserForm {
   method: types.TFormMethod;
 }
 
-interface IBrowserInput {
+export interface IBrowserInputOptions {
   type: types.TInputView;
   accept?: string; // Comma-separated list, ex: ".jpg,.png,.doc"
   autocomplete?: types.TOnOff; // HTML5
