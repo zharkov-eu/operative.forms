@@ -1,0 +1,33 @@
+{
+  "name": "operative.forms",
+  "version": "0.0.1",
+  "description": "Operative Forms Package",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zharkov-eu/operative.forms.git"
+  },
+  "author": "Operative Team",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/zharkov-eu/operative.forms/issues"
+  },
+  "homepage": "https://github.com/zharkov-eu/operative.forms#readme",
+  "devDependencies": {
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^8.0.28",
+    "@types/webpack": "^3.0.10",
+    "mocha": "^3.5.3",
+    "ts-loader": "^2.3.7",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.7.0",
+    "typescript": "^2.5.2",
+    "webpack": "^3.6.0"
+  }
+}

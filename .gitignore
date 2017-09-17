@@ -44,3 +44,6 @@ typings/
 
 # Generated d.ts
 *.d.ts
+
+# Dist package (Temporarly)
+dist

@@ -41,7 +41,7 @@ export function nonZeroInteger(numeric: any): boolean {
  */
 export function float(numeric: any): boolean {
   return numeric && Number.isNaN(parseFloat(numeric.toString()));
-}
+ }
 
 /**
  * Validation non-zero float numeric value

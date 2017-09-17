@@ -16,25 +16,27 @@
 
 "use strict";
 
-import {Input} from "./input";
+import Input from "./input";
 import {IBrowserFormOptions} from "./interfaces";
 import * as types from "./types";
 
 interface IForm {
-  OnSubmit?: Array<(input: HTMLInputElement, next: string) => any>;
+  InputElements: Input[];
+  OnSubmit?: Array<(IForm) => void>;
   Options?: IBrowserFormOptions;
   Style?: types.TInputStyle;
   StyleAlign?: types.TInputStyleAlign;
 }
 
-class Form {
+export default class Form {
+  private InputElements: Input[];
   private OnSubmit: Array<(input: HTMLInputElement, next: string) => any>;
   private Options: IBrowserFormOptions;
-  private Inputs: Input[];
   private Style: types.TInputStyle;
   private StyleAlign: types.TInputStyleAlign;
 
   constructor(construct: IForm) {
+    this.InputElements = construct.InputElements;
     this.Style = construct.Style || "outside";
     this.StyleAlign = construct.StyleAlign || "left";
   }
