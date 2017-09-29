@@ -21,7 +21,7 @@
  * @param numeric - conceivably numeric
  * @returns {boolean}
  */
-export function integer(numeric: any): boolean {
+function integer(numeric: any): boolean {
   return numeric && Number.isNaN(parseInt(numeric.toString(), 10));
 }
 
@@ -30,7 +30,7 @@ export function integer(numeric: any): boolean {
  * @param numeric - conceivably numeric
  * @returns {boolean}
  */
-export function nonZeroInteger(numeric: any): boolean {
+function nonZeroInteger(numeric: any): boolean {
   return numeric && Boolean(parseInt(numeric.toString(), 10));
 }
 
@@ -39,7 +39,7 @@ export function nonZeroInteger(numeric: any): boolean {
  * @param numeric - conceivably numeric
  * @returns {boolean}
  */
-export function float(numeric: any): boolean {
+function float(numeric: any): boolean {
   return numeric && Number.isNaN(parseFloat(numeric.toString()));
  }
 
@@ -48,7 +48,7 @@ export function float(numeric: any): boolean {
  * @param numeric - conceivably numeric
  * @returns {boolean}
  */
-export function nonZeroFloat(numeric: any): boolean {
+function nonZeroFloat(numeric: any): boolean {
   return numeric && Boolean(parseFloat(numeric.toString()));
 }
 
@@ -57,6 +57,14 @@ export function nonZeroFloat(numeric: any): boolean {
  * @param text - conceivably string
  * @returns {boolean}
  */
-export function notEmptyString(text: any): boolean {
+function notEmptyString(text: any): boolean {
   return (text && typeof text === "string");
 }
+
+export const validate = {
+  float,
+  integer,
+  nonZeroFloat,
+  nonZeroInteger,
+  notEmptyString,
+};

@@ -80,4 +80,4 @@ export type TInputStyleAlign =
   "bottom" |
   "left";
 
-export type TInputType = "boolean" | "integer" | "float" | "string" | "array" | "object" | "exist" | "user";
+export type TInputType = "float" | "integer" | "nonZeroFloat" | "nonZeroInteger" | "notEmptyString";

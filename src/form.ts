@@ -16,12 +16,13 @@
 
 "use strict";
 
-import Input from "./input";
+import * as errors from "./error";
+import Input, {IInput} from "./input";
 import {IBrowserFormOptions} from "./interfaces";
 import * as types from "./types";
 
 interface IForm {
-  InputElements: Input[];
+  FormQuerySelector: string;
   OnSubmit?: Array<(IForm) => void>;
   Options?: IBrowserFormOptions;
   Style?: types.TInputStyle;
@@ -29,6 +30,7 @@ interface IForm {
 }
 
 export default class Form {
+  private HTMLForm: HTMLElement;
   private InputElements: Input[];
   private OnSubmit: Array<(input: HTMLInputElement, next: string) => any>;
   private Options: IBrowserFormOptions;
@@ -36,8 +38,20 @@ export default class Form {
   private StyleAlign: types.TInputStyleAlign;
 
   constructor(construct: IForm) {
-    this.InputElements = construct.InputElements;
+    this.HTMLForm = document.querySelector(construct.FormQuerySelector) as HTMLElement;
+    if (!this.HTMLForm) {
+      throw new errors.HTMLElementNotFound("HTMLForm", construct.FormQuerySelector);
+    }
     this.Style = construct.Style || "outside";
     this.StyleAlign = construct.StyleAlign || "left";
+  }
+
+  public addInput(querySelector: string, options: IInput) {
+    const HTMLInput = this.HTMLForm.querySelector(querySelector) as HTMLInputElement;
+    if (HTMLInput) {
+      this.InputElements.push(new Input(HTMLInput));
+    } else {
+      throw new errors.HTMLElementNotFound("HTMLInput", querySelector);
+    }
   }
 }

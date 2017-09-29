@@ -18,49 +18,60 @@
 
 import {IBrowserInputOptions} from "./interfaces";
 import * as types from "./types";
-import * as validate from "./validate";
+import {validate} from "./validate";
 
-interface IInput {
-  Name: string;
-  Type: types.TInputType;
+interface IInputClass {
+  ActiveClass: string;
+  ErrorClass: string;
+  SuccessClass: string;
+}
+
+export interface IInput {
+  Name?: string;
+  Type?: types.TInputType;
   Icon?: string;
   View?: types.TInputView;
   Transform?: (value: string) => any;
-  Mask: (value: string) => any;
+  Validate?: (value: string) => boolean;
+  Mask?: (value: string) => any;
+  Active?: boolean;
   Required?: boolean;
+  Class?: IInputClass;
   Options?: IBrowserInputOptions;
 }
 
 class InputBase {
-  public Element: HTMLInputElement;
-  private Name: string;
-  private Type: types.TInputType;
-  private Value: string;
-  private RawValue: string;
-  private Required: boolean;
+  public HTML: HTMLInputElement;
+  protected Name: string;
+  protected Type: types.TInputType;
+  protected Value: string;
+  protected RawValue: string;
+  protected Active: boolean;
+  protected Required: boolean;
 
   constructor(element: HTMLInputElement, options?: IInput) {
-    this.Element = element;
+    this.HTML = element;
     this.Name = options ? options.Name || element.name : element.name;
-    this.Type = options ? options.Type || "string" : "string";
+    this.Type = options ? options.Type || "notEmptyString" : "notEmptyString";
+    this.Active = options ? options.Active || true : true;
     this.Required = options ? options.Required || false : false;
     this.RawValue = element.value;
   }
 }
 
 class InputEvents extends InputBase {
-  private OnKeyDown: Array<(InputBase, event, next?) => void>;
-  private OnInput: Array<(InputBase, event, next?) => void>;
-  private OnChange: Array<(InputBase, event, next?) => void>;
+  protected OnKeyDown: Array<(InputBase, event, next?) => void>;
+  protected OnInput: Array<(InputBase, event, next?) => void>;
+  protected OnChange: Array<(InputBase, event, next?) => void>;
 
   constructor(element: HTMLInputElement, options?: IInput) {
     super(element, options);
     this.OnKeyDown = [];
     this.OnInput = [];
     this.OnChange = [];
-    this.Element.addEventListener("keydown", this.handleKeyDown());
-    this.Element.addEventListener("input", this.handleInput());
-    this.Element.addEventListener("change", this.handleChange());
+    this.HTML.addEventListener("keydown", this.handleKeyDown());
+    this.HTML.addEventListener("input", this.handleInput());
+    this.HTML.addEventListener("change", this.handleChange());
   }
 
   public onKeyDown(func: (that: Input, event: KeyboardEvent) => void) {
@@ -101,6 +112,8 @@ class InputEvents extends InputBase {
 }
 
 export default class Input extends InputEvents {
+  public Valid: boolean;
+  private Class: IInputClass;
   private Icon: string;
   private Validate: (value: string) => boolean;
   private View: types.TInputView;
@@ -109,6 +122,37 @@ export default class Input extends InputEvents {
 
   constructor(element: HTMLInputElement, options?: IInput) {
     super(element, options);
+    this.Class = {
+      ActiveClass: "",
+      ErrorClass: "",
+      SuccessClass: "",
+    };
+    if (options && options.Class) {
+      this.Class.ActiveClass = options.Class.ActiveClass || "active";
+      this.Class.ErrorClass = options.Class.ErrorClass || "error";
+      this.Class.SuccessClass = options.Class.SuccessClass || "success";
+    }
+    this.Validate = options ?
+      typeof options.Validate === "function" ? options.Validate : validate[this.Type] : validate[this.Type];
 
+    this.onInput((that, e) => {
+      that.RawValue = that.HTML.value;
+      that.HTML.classList.remove(that.Class.ErrorClass);
+    });
+    this.onChange((that, e) => {
+      that.Valid = that.Validate(that.RawValue);
+      if (!that.Valid) { that.HTML.classList.add(that.Class.ErrorClass); }
+    });
+    if (!this.Active) {
+      this.onInput((that, e) => {
+        that.HTML.classList.remove(that.Class.ActiveClass);
+        e.preventDefault();
+      });
+    }
+  }
+
+  public activate() {
+    this.Active = true;
+    this.HTML.classList.add(this.Class.ActiveClass);
   }
 }

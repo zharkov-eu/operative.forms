@@ -26,7 +26,7 @@ const checkboxInput = formElement.querySelector("input[name=checkbox]") as HTMLI
 
 const email = new Input(emailInput);
 email.onChange((input, event) => {
-  console.log(input.Element.value);
+  console.log(input.HTML.value);
 });
 const password = new Input(passwordInput);
 const checkbox = new Input(checkboxInput);
