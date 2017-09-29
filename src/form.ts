@@ -44,12 +44,15 @@ export default class Form {
     }
     this.Style = construct.Style || "outside";
     this.StyleAlign = construct.StyleAlign || "left";
+    this.InputElements = [];
   }
 
-  public addInput(querySelector: string, options: IInput) {
+  public addInput(querySelector: string, options?: IInput): Input {
     const HTMLInput = this.HTMLForm.querySelector(querySelector) as HTMLInputElement;
     if (HTMLInput) {
-      this.InputElements.push(new Input(HTMLInput));
+      const input = new Input(HTMLInput, options);
+      this.InputElements.push(input);
+      return input;
     } else {
       throw new errors.HTMLElementNotFound("HTMLInput", querySelector);
     }

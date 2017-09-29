@@ -22,7 +22,7 @@
  * @returns {boolean}
  */
 function integer(numeric: any): boolean {
-  return numeric && Number.isNaN(parseInt(numeric.toString(), 10));
+  return numeric && !Number.isNaN(parseInt(numeric.toString(), 10));
 }
 
 /**
@@ -40,7 +40,7 @@ function nonZeroInteger(numeric: any): boolean {
  * @returns {boolean}
  */
 function float(numeric: any): boolean {
-  return numeric && Number.isNaN(parseFloat(numeric.toString()));
+  return numeric && !Number.isNaN(parseFloat(numeric.toString()));
  }
 
 /**

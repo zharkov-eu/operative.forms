@@ -19,17 +19,38 @@
 import Form from "./src/form";
 import Input from "./src/input";
 
-const formElement = document.querySelector("#form");
-const emailInput = formElement.querySelector("input[name=email]") as HTMLInputElement;
-const passwordInput = formElement.querySelector("input[name=password]") as HTMLInputElement;
-const checkboxInput = formElement.querySelector("input[name=checkbox]") as HTMLInputElement;
-
-const email = new Input(emailInput);
-email.onChange((input, event) => {
-  console.log(input.HTML.value);
+const form = new Form({FormQuerySelector: "#form"});
+const email = form.addInput(`input[name="email"]`, {
+  Type: "float",
 });
-const password = new Input(passwordInput);
-const checkbox = new Input(checkboxInput);
-const form = new Form({
-  InputElements: [email, password, checkbox],
+
+const password = form.addInput(`input[name="password"]`);
+password.onInput((that, e) => {
+  console.log(that);
+  if (that.Value === "12345") {
+    that.success();
+  } else {
+    that.clearSuccess();
+  }
+});
+password.onSuccess((that) => {
+  console.log(that.Value);
+});
+
+const required = form.addInput(`input[name="required"]`, {
+  Required: true,
+});
+
+const checkbox = form.addInput(`input[name="checkbox"]`);
+
+const text = form.addInput(`input[name="text"]`, {
+  Inactive: true,
+});
+
+const submit = form.addInput(`input[type="submit"]`);
+// form.addInput(`input[type="subas"]`);
+
+checkbox.onChange((that, e) => {
+  console.log(that);
+  text.activate();
 });

@@ -3,12 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Operative.Forms</title>
+    <style>
+        .error {
+            border: 1px solid red;
+        }
+        .success {
+            border: 1px solid green;
+        }
+        .inactive {
+            background-color: gainsboro;
+        }
+    </style>
 </head>
 <body>
     <form id="form">
-        <input type="email" name="email"/>
-        <input type="password" name="password"/>
-        <input type="checkbox" name="checkbox"/>
+        <label>
+            Email
+            <input type="email" name="email"/>
+        </label>
+        <label>
+            Required
+            <input type="number" name="required"/>
+        </label>
+        <label>
+            Password
+            <input type="password" name="password"/>
+        </label>
+        <label>
+            Inactive
+            <input type="text" name="text"/>
+        </label>
+        <label>
+            <input type="checkbox" name="checkbox"/>
+        </label>
+        <input type="submit"/>
     </form>
     <script src="../dist/index.bundle.js"></script>
 </body>

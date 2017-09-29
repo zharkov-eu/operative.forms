@@ -16,12 +16,13 @@
 
 "use strict";
 
+import Dispatcher from "./dispatcher";
 import {IBrowserInputOptions} from "./interfaces";
 import * as types from "./types";
 import {validate} from "./validate";
 
 interface IInputClass {
-  ActiveClass: string;
+  InactiveClass: string;
   ErrorClass: string;
   SuccessClass: string;
 }
@@ -34,7 +35,7 @@ export interface IInput {
   Transform?: (value: string) => any;
   Validate?: (value: string) => boolean;
   Mask?: (value: string) => any;
-  Active?: boolean;
+  Inactive?: boolean;
   Required?: boolean;
   Class?: IInputClass;
   Options?: IBrowserInputOptions;
@@ -42,24 +43,25 @@ export interface IInput {
 
 class InputBase {
   public HTML: HTMLInputElement;
+  public Value: string;
   protected Name: string;
   protected Type: types.TInputType;
-  protected Value: string;
   protected RawValue: string;
-  protected Active: boolean;
+  protected Inactive: boolean;
   protected Required: boolean;
 
   constructor(element: HTMLInputElement, options?: IInput) {
     this.HTML = element;
     this.Name = options ? options.Name || element.name : element.name;
     this.Type = options ? options.Type || "notEmptyString" : "notEmptyString";
-    this.Active = options ? options.Active || true : true;
+    this.Inactive = options ? options.Inactive || false : false;
     this.Required = options ? options.Required || false : false;
     this.RawValue = element.value;
   }
 }
 
 class InputEvents extends InputBase {
+  protected Dispatcher: Dispatcher;
   protected OnKeyDown: Array<(InputBase, event, next?) => void>;
   protected OnInput: Array<(InputBase, event, next?) => void>;
   protected OnChange: Array<(InputBase, event, next?) => void>;
@@ -72,6 +74,7 @@ class InputEvents extends InputBase {
     this.HTML.addEventListener("keydown", this.handleKeyDown());
     this.HTML.addEventListener("input", this.handleInput());
     this.HTML.addEventListener("change", this.handleChange());
+    this.Dispatcher = new Dispatcher(this);
   }
 
   public onKeyDown(func: (that: Input, event: KeyboardEvent) => void) {
@@ -84,6 +87,18 @@ class InputEvents extends InputBase {
 
   public onInput(func: (that: Input, event: Event) => void) {
     this.OnInput.push(func);
+  }
+
+  public onSuccess(func: (that: Input) => void) {
+    this.Dispatcher.on("success", func);
+  }
+
+  public onActivate(func: (that: Input) => void) {
+    this.Dispatcher.on("activate", func);
+  }
+
+  public onError(func: (that: Input) => void) {
+    this.Dispatcher.on("error", func);
   }
 
   private handleKeyDown() {
@@ -123,36 +138,60 @@ export default class Input extends InputEvents {
   constructor(element: HTMLInputElement, options?: IInput) {
     super(element, options);
     this.Class = {
-      ActiveClass: "",
-      ErrorClass: "",
-      SuccessClass: "",
+      ErrorClass: "error",
+      InactiveClass: "inactive",
+      SuccessClass: "success",
     };
     if (options && options.Class) {
-      this.Class.ActiveClass = options.Class.ActiveClass || "active";
+      this.Class.InactiveClass = options.Class.InactiveClass || "inactive";
       this.Class.ErrorClass = options.Class.ErrorClass || "error";
       this.Class.SuccessClass = options.Class.SuccessClass || "success";
     }
     this.Validate = options ?
       typeof options.Validate === "function" ? options.Validate : validate[this.Type] : validate[this.Type];
+    this.Transform = options ?
+      typeof options.Transform === "function" ? options.Validate : (value) => value : (value) => value;
+    if (this.Inactive) { this.clearActivate(); }
 
     this.onInput((that, e) => {
       that.RawValue = that.HTML.value;
-      that.HTML.classList.remove(that.Class.ErrorClass);
+      that.Valid = that.Validate(that.RawValue);
+      that.Value = that.Valid ? that.Transform(that.RawValue) : "";
+      that.clearError();
     });
     this.onChange((that, e) => {
-      that.Valid = that.Validate(that.RawValue);
-      if (!that.Valid) { that.HTML.classList.add(that.Class.ErrorClass); }
+      if (!that.Valid) { that.error(); }
     });
-    if (!this.Active) {
-      this.onInput((that, e) => {
-        that.HTML.classList.remove(that.Class.ActiveClass);
-        e.preventDefault();
-      });
-    }
   }
 
   public activate() {
-    this.Active = true;
-    this.HTML.classList.add(this.Class.ActiveClass);
+    this.Inactive = false;
+    this.HTML.classList.remove(this.Class.InactiveClass);
+    this.HTML.disabled = false;
+    this.Dispatcher.emit("activate");
+  }
+
+  public clearActivate() {
+    this.Inactive = true;
+    this.HTML.classList.add(this.Class.InactiveClass);
+    this.HTML.disabled = true;
+  }
+
+  public error() {
+    this.HTML.classList.add(this.Class.ErrorClass);
+    this.Dispatcher.emit("error");
+  }
+
+  public clearError() {
+    this.HTML.classList.remove(this.Class.ErrorClass);
+  }
+
+  public success() {
+    this.HTML.classList.add(this.Class.SuccessClass);
+    this.Dispatcher.emit("success");
+  }
+
+  public clearSuccess() {
+    this.HTML.classList.remove(this.Class.SuccessClass);
   }
 }
